@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nongye.p2p.mapper.LogininifMapper">
+	<resultMap type="com.nongye.p2p.domain.Logininfo" id="LoginResultMap">
+		<id column="id" property="id"/>
+		<result column="username" property="userName"/>
+		<result column="password" property="passWord"/>
+		<result column="state" property="state"/>
+		<result column="type" property="type"/>
+	</resultMap>
+	
+	<!-- 注册用户 -->
+	<insert id="insertLogininif" >
+	<selectKey keyProperty="id" order="AFTER" resultType="int">
+		select   LAST_INSERT_ID()
+	</selectKey>
+		insert into logininfo(username,password,state,type)
+		values(#{userName},#{passWord},#{state},#{type})
+	</insert>
+	
+	<!-- 查询用户记录数 -->
+	<select	id="getCountByUsername" resultType="int">
+		select count(id)
+		from logininfo
+		where username=#{userName}
+	</select>
+	
+	<select id="getByLoininfo" resultMap="LoginResultMap">
+	select *
+	from logininfo
+	where
+	username=#{userName}	
+	and password=#{passWord}
+	</select>
+	
+	<select id="getUserType" resultType="int">
+		select count(id)
+		from logininfo
+		where type=#{type}
+	</select>
+	
+	<select id="geyUserinfoById" resultMap="LoginResultMap">
+		select *
+		from logininfo 
+		where id=#{id}
+	</select>
+	
+	<!-- 根据姓名查找Id -->
+	<select id="getByUserName" resultMap="LoginResultMap">
+		select *
+		from logininfo
+		where username=#{userName}
+	</select>
+</mapper>

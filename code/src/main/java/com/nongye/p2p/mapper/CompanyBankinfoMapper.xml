@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nongye.p2p.mapper.CompanyBankinfoMapper">
+	<resultMap id="BaseResultMap" type="com.nongye.p2p.domain.CompanyBankinfo">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="bankname" property="bankName" jdbcType="VARCHAR" />
+		<result column="accountname" property="accountName" jdbcType="VARCHAR" />
+		<result column="banknumber" property="bankNumber" jdbcType="VARCHAR" />
+		<result column="bankforkname" property="bankForkName" jdbcType="VARCHAR" />
+		<result column="iconCls" property="iconCls" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		insert
+		into `companybankinfo`
+		(bankname,accountname,banknumber,bankforkname,iconCls)
+		values
+		(#{bankName,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR},
+		#{bankNumber,jdbcType=VARCHAR},
+		#{bankForkName,jdbcType=VARCHAR},
+		#{iconCls,jdbcType=VARCHAR})
+	</insert>
+
+	<!-- 查询记录数 -->
+	<select id="queryCount" resultType="int">
+		select count(id)
+		from
+		companybankinfo
+	</select>
+
+	<!-- 分页查询 -->
+	<select id="pageList" resultMap="BaseResultMap">
+		select
+		id,bankname,accountname,banknumber,bankForkname,iconCls
+		from
+		companybankinfo
+		limit #{start},#{pageSize}
+	</select>
+	<!-- 修改 -->
+	<update id="updateByPrimaryKey">
+		update companybankinfo
+		set bankname=#{bankName},
+		accountname=#{accountName},
+		banknumber=#{bankNumber},
+		bankforkname=#{bankForkName},
+		iconCls=#{iconCls}
+		where id=#{id}
+	</update>
+
+	<select id="list" resultMap="BaseResultMap">
+		select
+		id,bankname,accountname,banknumber,bankForkname,iconCls
+		from
+		companybankinfo
+	</select>
+</mapper>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+	<script type="text/javascript" src="/js/jquery/jquery-2.1.3.js"></script>
+	<script type="text/javascript" src="/js/autocomplete/jquery.auto-complete.js"></script>
+	<link rel="stylesheet" type="text/css" href="/js/autocomplete/jquery.auto-complete.css"/>
+<script type="text/javascript">
+$(function()
+		{
+	  var choices = ['ActionScript', 'AppleScript', 'Asp', 'Assembly', 'BASIC', 'Batch', 'C', 'C++', 'CSS', 'Clojure', 'COBOL', 'ColdFusion', 'Erlang', 'Fortran', 'Groovy', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lisp', 'Perl', 'PHP', 'PowerShell', 'Python', 'Ruby', 'Scala', 'Scheme', 'SQL', 'TeX', 'XML'];
+		      $('#exampleInputAmount').autoComplete({
+		        minChars: 3,
+		        source: function(term, suggest){
+		            term = term.toLowerCase();
+		          //  var choices = ['ActionScript', 'AppleScript', 'Asp', 'Assembly', 'BASIC', 'Batch', 'C', 'C++', 'CSS', 'Clojure', 'COBOL', 'ColdFusion', 'Erlang', 'Fortran', 'Groovy', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lisp', 'Perl', 'PHP', 'PowerShell', 'Python', 'Ruby', 'Scala', 'Scheme', 'SQL', 'TeX', 'XML'];
+		            var suggestions = [];
+		            for (i=0;i<choices.length;i++)
+		                if (~choices[i].toLowerCase().indexOf(term)) suggestions.push(choices[i]);
+		            suggest(suggestions);
+		        }
+		    });
+		})
+    	
+    </script>
+  
+
+<body>
+	
+<input type="text" id="exampleInputAmount"/>	
+	
+</body>
+</html>

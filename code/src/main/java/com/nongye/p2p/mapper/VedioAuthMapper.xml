@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nongye.p2p.mapper.VedioAuthMapper">
+	<resultMap id="BaseResultMap" type="com.nongye.p2p.base.BaseAuditDomain" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="state" property="state" jdbcType="TINYINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="auditTime" property="auditTime" jdbcType="TIMESTAMP" />
+    <result column="applyTime" property="applyTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+    <resultMap id="FullResultMap" type="RealAuth" extends="BaseResultMap">
+     <!-- 多对一 -->
+     <association property="applier" javaType="com.nongye.p2p.domain.Logininfo" columnPrefix="ap_">
+     	<id property="id" column="id"/>
+     	<result property="userName" column="username"/>
+     </association>
+     
+     <!-- 多对一 -->
+     <association property="auditor" javaType="com.nongye.p2p.domain.Logininfo" columnPrefix="au_">
+     	<id property="id" column="id"/>
+     	<result property="userName" column="username"/>
+     </association>
+  </resultMap>
+  <!-- 新增 -->
+  <insert id="insert">
+  <selectKey keyProperty="id" order="AFTER" resultType="int">
+       select   LAST_INSERT_ID()
+     </selectKey>
+     insert into `vedioauth` (state,remark,auditTime, applyTime, auditor_id,applier_id)
+    values (#{state,jdbcType=TINYINT},#{remark,jdbcType=VARCHAR}, 
+      #{auditTime,jdbcType=TIMESTAMP},#{applyTime,jdbcType=TIMESTAMP},#{auditor.id,jdbcType=BIGINT}, 
+      #{applier.id,jdbcType=BIGINT})
+  </insert>
+  <!-- sql语句 -->
+  <!-- 查询条件 -->
+	<sql id="base_where">
+		<where>
+        <if test="beginDate!=null">
+          and r.auditTime &gt;=#{beginDate}
+        </if>
+        <if test="endDate!=null">
+          and r.applyTime &lt;=#{endDate}
+        </if>
+        <if test="state!=-1">
+          and r.state=#{state}
+        </if>
+        </where>
+	</sql>
+	<!-- 查询字段 -->
+	<sql id="full_column">
+		r.id,r.state,r.remark,r.auditTime, r.applyTime,ap.id as ap_id,ap.username as ap_username,au.id as au_id,au.username as au_username
+	</sql>
+  
+  <!-- 查询记录数 -->
+  <select id="count" resultType="int">
+		select count(id)
+		from vedioauth r
+		<include refid="base_where" />
+		LIMIT #{start},#{pageSize}
+	</select>
+  
+  <!-- 查询所有分页 -->
+  <select id="getAllRealauth" resultMap="FullResultMap">
+		select <include refid="full_column"/>
+		from vedioauth r JOIN logininfo ap ON r.applier_id=ap.id LEFT JOIN logininfo au ON r.auditor_id = au.id
+		<include refid="base_where" />
+		LIMIT #{start},#{pageSize}
+	</select>
+  <!-- 修改 -->
+  
+  <select id="getCountByUsername" resultType="int">
+  select count(id)
+  from logininfo
+  where username=#{userName} and type=1
+  </select>
+	<!-- 模糊查询姓名 -->
+  <select id="getByUserName" parameterType="string" resultType="java.lang.String">
+  	select username
+  	from logininfo
+  	where username like '%${_parameter}%'
+  </select>
+ </mapper>

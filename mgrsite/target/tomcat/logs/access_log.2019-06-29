@@ -1,0 +1,7 @@
+0:0:0:0:0:0:0:1 - - [29/Jun/2019:01:55:24 +0800] "POST /adminLogin.do HTTP/1.1" 200 39 http-bio-8081-exec-1 149
+0:0:0:0:0:0:0:1 - - [29/Jun/2019:01:55:25 +0800] "POST /adminLogin.do HTTP/1.1" 200 39 http-bio-8081-exec-2 25
+0:0:0:0:0:0:0:1 - - [29/Jun/2019:01:55:26 +0800] "GET /main.do HTTP/1.1" 200 3794 http-bio-8081-exec-3 108
+0:0:0:0:0:0:0:1 - - [29/Jun/2019:01:55:26 +0800] "GET /images/logo.png HTTP/1.1" 200 20380 http-bio-8081-exec-4 2
+0:0:0:0:0:0:0:1 - - [29/Jun/2019:01:55:26 +0800] "GET /css/core.css HTTP/1.1" 304 - http-bio-8081-exec-5 3
+0:0:0:0:0:0:0:1 - - [29/Jun/2019:01:55:26 +0800] "GET /favicon.ico HTTP/1.1" 404 973 http-bio-8081-exec-7 1
+0:0:0:0:0:0:0:1 - - [29/Jun/2019:01:55:46 +0800] "GET /rechargeOffline.do HTTP/1.1" 404 949 http-bio-8081-exec-8 4

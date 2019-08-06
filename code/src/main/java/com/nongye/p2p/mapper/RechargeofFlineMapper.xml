@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nongye.p2p.mapper.RechargeofFlineMapper">
+	<resultMap type="com.nongye.p2p.domain.RechargeofFline" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="auditTime" property="auditTime" jdbcType="TIMESTAMP" />
+		<result column="applyTime" property="applyTime" jdbcType="TIMESTAMP" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="state" property="state" jdbcType="TINYINT" />
+		<result column="tradeCode" property="tradeCode" jdbcType="VARCHAR" />
+		<result column="tradeTime" property="tradeTime" jdbcType="TIMESTAMP" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+		<result column="note" property="note" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="FullResultMap" type="com.nongye.p2p.domain.RechargeofFline"
+		extends="BaseResultMap">
+		<!-- 多对一 -->
+		<association property="applier" javaType="com.nongye.p2p.domain.Logininfo"
+			columnPrefix="ap_">
+			<id property="id" column="id" />
+			<result property="userName" column="username" />
+		</association>
+
+		<!-- 多对一 -->
+		<association property="auditor" javaType="com.nongye.p2p.domain.Logininfo"
+			columnPrefix="au_">
+			<id property="id" column="id" />
+			<result property="userName" column="username" />
+		</association>
+
+		<association property="bankinfo_id"
+			javaType="com.nongye.p2p.domain.CompanyBankinfo" columnPrefix="bi_"
+			resultMap="com.nongye.p2p.mapper.CompanyBankinfoMapper.BaseResultMap" />
+
+
+	</resultMap>
+
+
+	<sql id="Base_select">
+		r.id,r.auditTime,r.applyTime,r.remark,r.state,r.tradeCode,r.tradeTime,r.amount,r.note,c.id
+		as bi_id,c.bankname as bi_bankname,c.accountname as
+		bi_accountname,c.banknumber as bi_banknumber,c.bankforkname as
+		bi_bankforkname,ap.id as ap_id,ap.username as
+		ap_username,au.id as
+		au_id,au.username as au_username
+	</sql>
+	<sql id="Base_where">
+		<where>
+			<if test="beginDate!=null and beginDate!=''">
+				and r.auditTime &gt;=#{beginDate}
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				and r.applyTime &lt;=#{endDate}
+			</if>
+			<if test="state!=-1">
+				and r.state=#{state}
+			</if>
+			<if test="bankInfoid>0">
+				and r.bankinfo_id=#{bankInfoid}
+			</if>
+			<if test="tradeCode!=null and tradeCode!=''">
+				and r.tradeCode=#{tradeCode}
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="Base_where_user">
+		<where>
+			<if test="beginDate!=null and beginDate!=''">
+				and r.auditTime &gt;=#{beginDate}
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				and r.applyTime &lt;=#{endDate}
+			</if>
+			<if test="state!=-1">
+				and r.state=#{state}
+			</if>
+			<if test="bankInfoid>0">
+				and r.bankinfo_id=#{bankInfoid}
+			</if>
+			<if test="tradeCode!=null and tradeCode!=''">
+				and r.tradeCode=#{tradeCode}
+			</if>
+			<if test="userId>0">
+				and r.applier_id=#{userId}
+			</if>
+		</where>
+	</sql>
+	<!-- 分页查询个数 -->
+	<select id="queryCount" resultType="int">
+		select count(r.id)
+		from rechargeoffline r JOIN logininfo ap ON
+		r.applier_id=ap.id LEFT JOIN logininfo au ON r.auditor_id = au.id LEFT
+		JOIN companybankinfo c ON r.bankinfo_id=c.id
+		<include refid="Base_where" />
+	</select>
+	<!-- 分页查询 -->
+	<select id="pageList" resultMap="FullResultMap">
+		select
+		<include refid="Base_select" />
+		from rechargeoffline r JOIN logininfo ap ON r.applier_id=ap.id LEFT
+		JOIN logininfo au ON r.auditor_id = au.id LEFT JOIN companybankinfo c
+		ON r.bankinfo_id=c.id
+		<include refid="Base_where" />
+		ORDER BY applyTime DESC
+		LIMIT #{start},#{pageSize}
+
+	</select>
+	<!-- 分页查询个数 user -->
+	<select id="queryCountUser" resultType="int">
+		select count(r.id)
+		from rechargeoffline r JOIN logininfo ap ON
+		r.applier_id=ap.id LEFT JOIN logininfo au ON r.auditor_id = au.id LEFT
+		JOIN companybankinfo c ON r.bankinfo_id=c.id
+		<include refid="Base_where_user" />
+	</select>
+	
+	<!-- 分页查询 明细user -->
+	<select id="pageListUser" resultMap="FullResultMap">
+		select
+		<include refid="Base_select" />
+		from rechargeoffline r JOIN logininfo ap ON r.applier_id=ap.id LEFT
+		JOIN logininfo au ON r.auditor_id = au.id LEFT JOIN companybankinfo c
+		ON r.bankinfo_id=c.id
+		<include refid="Base_where_user" />
+		ORDER BY applyTime DESC
+		LIMIT #{start},#{pageSize}
+	</select>
+	<!-- 添加 -->
+	<insert id="insert">
+		insert into rechargeoffline
+		(auditTime,applyTime,remark,state,tradeCode,tradeTime,amount,note,bankinfo_id,auditor_id,applier_id)
+		values
+		(#{auditTime,jdbcType=TIMESTAMP},
+		#{applyTime,jdbcType=TIMESTAMP},
+		#{remark,jdbcType=VARCHAR},
+		#{state,jdbcType=TINYINT},
+		#{tradeCode,jdbcType=VARCHAR},
+		#{tradeTime,jdbcType=TIMESTAMP},
+		#{amount,jdbcType=DECIMAL},
+		#{note,jdbcType=VARCHAR},
+		#{bankinfo_id.id,jdbcType=BIGINT},
+		#{auditor.id,jdbcType=BIGINT},
+		#{applier.id,jdbcType=BIGINT})
+	</insert>
+	
+	<update id="updateByPrimaryKey">
+		update rechargeoffline 
+		set auditTime = #{auditTime,jdbcType=TIMESTAMP},
+		applyTime = #{applyTime,jdbcType=TIMESTAMP},
+		remark = #{remark,jdbcType=VARCHAR},
+		state = #{state,jdbcType=TINYINT},
+		tradeCode = #{tradeCode,jdbcType=VARCHAR},
+		tradeTime = #{tradeTime,jdbcType=TIMESTAMP},
+		amount = #{amount,jdbcType=DECIMAL},
+		note = #{note,jdbcType=VARCHAR},
+		bankinfo_id = #{bankinfo_id.id,jdbcType=BIGINT},
+		auditor_id = #{auditor.id,jdbcType=BIGINT},
+		applier_id = #{applier.id,jdbcType=BIGINT}
+		where id=#{id}
+	</update>
+	
+	<select id="selectByPrimaryKey" resultMap="FullResultMap">
+		select
+		<include refid="Base_select" />
+		from rechargeoffline r JOIN logininfo ap ON r.applier_id=ap.id LEFT
+		JOIN logininfo au ON r.auditor_id = au.id LEFT JOIN companybankinfo c
+		ON r.bankinfo_id=c.id
+		where r.id=#{id,jdbcType=BIGINT}
+	</select>
+</mapper>
